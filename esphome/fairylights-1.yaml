@@ -1,0 +1,25 @@
+esphome:
+  name: fairylights-1
+  friendly_name: FairyLights 1
+
+logger:
+#  level: DEBUG
+
+api:
+  encryption:
+    key: ---INSERT HERE---
+
+ota:
+  password: ---INSERT HERE---
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: "Fairylights 1 Fallback Hotspot"
+    password: ---INSERT HERE---
+
+captive_portal:
+
+<<: !include fairylights.base.yaml

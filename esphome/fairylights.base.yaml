@@ -1,0 +1,91 @@
+
+bk72xx:
+  board: generic-bk7231n-qfn32-tuya
+
+binary_sensor:
+  - platform: gpio
+    id: button
+    name: Button
+    pin:
+      number: P6
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+  - platform: remote_receiver
+    name: "Remote On"
+    pioneer:
+      rc_code_1: 0x0045
+  - platform: remote_receiver
+    name: "Remote Timer"
+    pioneer:
+      rc_code_1: 0x0046
+  - platform: remote_receiver
+    name: "Remote Off"
+    pioneer:
+      rc_code_1: 0x0047
+  - platform: remote_receiver
+    name: "Remote Mode 1"
+    pioneer:
+      rc_code_1: 0x0044
+  - platform: remote_receiver
+    name: "Remote Mode 2"
+    pioneer:
+      rc_code_1: 0x0043
+  - platform: remote_receiver
+    name: "Remote Mode 3"
+    pioneer:
+      rc_code_1: 0x0007
+  - platform: remote_receiver
+    name: "Remote Mode 4"
+    pioneer:
+      rc_code_1: 0x0009
+  - platform: remote_receiver
+    name: "Remote Mode 5"
+    pioneer:
+      rc_code_1: 0x0016
+  - platform: remote_receiver
+    name: "Remote Mode 6"
+    pioneer:
+      rc_code_1: 0x000D
+  - platform: remote_receiver
+    name: "Remote Mode 7"
+    pioneer:
+      rc_code_1: 0x000C
+  - platform: remote_receiver
+    name: "Remote Mode 8"
+    pioneer:
+      rc_code_1: 0x005E
+  - platform: remote_receiver
+    name: "Remote Dim Down"
+    pioneer:
+      rc_code_1: 0x0008
+  - platform: remote_receiver
+    name: "Remote Dim Up"
+    pioneer:
+      rc_code_1: 0x005A
+
+remote_receiver:
+  id: ir_receiver
+  pin:
+    number: P16
+    inverted: true
+    mode:
+      input: true
+      pulldown: true
+  dump: pioneer
+
+output:
+  - platform: libretiny_pwm
+    id: output_1
+    pin: P7
+  - platform: libretiny_pwm
+    id: output_2
+    pin: P8
+
+light:
+  - platform: hbridge
+    id: fairy_light
+    name: Light
+    pin_a: output_1
+    pin_b: output_2
