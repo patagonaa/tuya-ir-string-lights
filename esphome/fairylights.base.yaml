@@ -2,6 +2,8 @@
 bk72xx:
   board: generic-bk7231n-qfn32-tuya
   framework:
+    version: 0.0.0
+    source: 'https://github.com/libretiny-eu/libretiny.git#eed39c9cfb75e287bd1c4f746b54112144269939'    # use newest LibreTiny version, as some PWM things have changed
     options:
       LT_UART_DEFAULT_PORT: 1     # output ESPHome log messages on UART1 (upload UART)
 

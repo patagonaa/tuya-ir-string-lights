@@ -54,45 +54,44 @@ class LTHBridgeLightOutput : public Component, public light::LightOutput {
 		  pinEnable(pin, PIN_PWM);
     }
 
-    pwm.channel		        = gpioToPwm(pin->gpio);
-		pwm.cfg.bits.en	      = PWM_ENABLE;
-		pwm.cfg.bits.int_en   = PWM_INT_DIS;
-		pwm.cfg.bits.mode	    = PWM_PWM_MODE;
-		pwm.cfg.bits.clk	    = PWM_CLK_26M;
-		pwm.end_value		      = cycles;
-    pwm.duty_cycle1       = !inverted ? cycles : 1;  // both outputs need to be low at boot
-		pwm.p_Int_Handler	    = NULL;
-    data->pwm = &pwm;
+    data->pwm.channel		        = gpioToPwm(pin->gpio);
+		data->pwm.cfg.bits.en	      = PWM_ENABLE;
+		data->pwm.cfg.bits.int_en   = PWM_INT_DIS;
+		data->pwm.cfg.bits.mode	    = PWM_PWM_MODE;
+		data->pwm.cfg.bits.clk	    = PWM_CLK_26M;
+		data->pwm.end_value		      = cycles;
+    data->pwm.duty_cycle1       = !inverted ? cycles : 1;  // both outputs need to be low at boot
+		data->pwm.p_Int_Handler	    = NULL;
 
-    ESP_LOGD(TAG, "pin: %d, chan: %d, d.p.c: %d, dc1: %d, ev: %d", pin->gpio, gpioToPwm(pin->gpio), data->pwm->channel, data->pwm->duty_cycle1, data->pwm->end_value);
+    // ESP_LOGD(TAG, "pin: %d, chan: %d, d.p.c: %d, dc1: %d, ev: %d", pin->gpio, gpioToPwm(pin->gpio), data->pwm->channel, data->pwm->duty_cycle1, data->pwm->end_value);
 
     // PWM sddev handler: https://github.com/libretiny-eu/framework-beken-bdk/blob/platformio/beken378/driver/pwm/pwm_bk7231n.c#L740
     __wrap_bk_printf_disable();
-    sddev_control(PWM_DEV_NAME, CMD_PWM_INIT_PARAM, data->pwm);
+    sddev_control(PWM_DEV_NAME, CMD_PWM_INIT_PARAM, &data->pwm);
     if (!inverted)
-      sddev_control(PWM_DEV_NAME, CMD_PWM_INIT_LEVL_SET_LOW, &data->pwm->channel);
+      sddev_control(PWM_DEV_NAME, CMD_PWM_INIT_LEVL_SET_LOW, &data->pwm.channel);
     else
-      sddev_control(PWM_DEV_NAME, CMD_PWM_INIT_LEVL_SET_HIGH, &data->pwm->channel);
+      sddev_control(PWM_DEV_NAME, CMD_PWM_INIT_LEVL_SET_HIGH, &data->pwm.channel);
     // sddev_control(PWM_DEV_NAME, CMD_PWM_UNIT_ENABLE, &data->pwm->channel); // done separately, for better synchronization
     __wrap_bk_printf_enable();
-    return pwm.channel;
+    return data->pwm.channel;
   }
 
   void pwmWrite(pin_size_t pinNumber, float val) {
     pinCheckGetData(pinNumber, PIN_PWM, );  // weird macro that sets pin and data https://github.com/libretiny-eu/libretiny/blob/master/cores/common/arduino/src/wiring/wiring_private.h#L37
 
-	  uint32_t dutyCycle = val * (data->pwm->end_value);
+	  uint32_t dutyCycle = val * (data->pwm.end_value);
     if (dutyCycle == 0) {
       // If the inverted output goes to zero, it "forgets" its inversion. 
       // So just set it to 1 (1/26000 PWM interval is basically invisible).
       dutyCycle = 1;  
     }
 
-    data->pwm->channel = gpioToPwm(pin->gpio);
-    data->pwm->duty_cycle1 = dutyCycle;  // only works for BK7231N
+    data->pwm.channel = gpioToPwm(pin->gpio);
+    data->pwm.duty_cycle1 = dutyCycle;  // only works for BK7231N
 
     __wrap_bk_printf_disable();
-    sddev_control(PWM_DEV_NAME, CMD_PWM_SET_DUTY_CYCLE, data->pwm);
+    sddev_control(PWM_DEV_NAME, CMD_PWM_SET_DUTY_CYCLE, &data->pwm);
     __wrap_bk_printf_enable();
   }
 
@@ -105,8 +104,8 @@ class LTHBridgeLightOutput : public Component, public light::LightOutput {
       limit_fact = (1 / sum) * 0.98;
     }
     // ESP_LOGD(TAG, "Brght: %.3f, CW: %.3f, WW: %.3f", sum, cw_, ww_);
-    pwmWrite(this->pin_a_->get_pin(), 1.0 - (this->cw_ * limit_fact));
-    pwmWrite(this->pin_b_->get_pin(), (this->ww_ * limit_fact));
+    pwmWrite(this->pin_a_->get_pin(), 1.0 - (this->ww_ * limit_fact));
+    pwmWrite(this->pin_b_->get_pin(), (this->cw_ * limit_fact));
   }
 
   void setup() override { 
@@ -121,7 +120,6 @@ class LTHBridgeLightOutput : public Component, public light::LightOutput {
 
  protected:
   InternalGPIOPin *pin_a_, *pin_b_;
-  pwm_param_t pwm = {0};
   float cw_ = 0;
   float ww_ = 0;
   static const int freq_ = 1000;
