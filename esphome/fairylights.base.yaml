@@ -3,7 +3,7 @@ bk72xx:
   board: generic-bk7231n-qfn32-tuya
   framework:
     options:
-      LT_UART_DEFAULT_PORT: 1 # output ESPHome log messages on UART1 (upload UART)
+      LT_UART_DEFAULT_PORT: 1     # output ESPHome log messages on UART1 (upload UART)
 
 external_components:
   # - source: 
@@ -89,3 +89,77 @@ light:
     # default_transition_length: 0.5s
     # gamma_correct: 1.0
     # constant_brightness: true
+    id: hb_light
+    effects:
+      - random:
+      - pulse:
+          update_interval: 4s
+          transition_length: 4s
+          max_brightness: 78%   # 50% with gamma, maximum of both groups lit at the same time
+      - lambda:
+          name: Fade Between
+          update_interval: 5s
+          lambda: |-
+            static int state = 0;
+            auto call = id(hb_light).turn_on();
+            call.set_transition_length(5000);
+            //id(hb_light).set_gamma_correct(1.0);
+            if (state == 0) {
+              call.set_warm_white(1.0);
+              call.set_cold_white(0.0);
+            } else if (state == 1) {
+              call.set_warm_white(0.0);
+              call.set_cold_white(1.0);
+            }
+            call.set_publish(false);
+            call.perform();
+            state += 1;
+            if (state >= 2)
+              state = 0;
+      - lambda:
+          name: Fade Single
+          update_interval: 2s
+          lambda: |-
+            static int state = 0;
+            auto call = id(hb_light).turn_on();
+            call.set_transition_length(2000);
+            //id(hb_light).set_gamma_correct(1.0);
+            if (state == 0) {
+              call.set_warm_white(1.0);
+              call.set_cold_white(0.0);
+            } else if (state == 1) {
+              call.set_warm_white(0.0);
+              call.set_cold_white(0.0);
+            } else if (state == 2) {
+              call.set_warm_white(0.0);
+              call.set_cold_white(1.0);
+            } else if (state == 3) {
+              call.set_warm_white(0.0);
+              call.set_cold_white(0.0);
+            }
+            call.set_publish(false);
+            call.perform();
+            state += 1;
+            if (state >= 4)
+              state = 0;
+      - lambda:
+          name: Flicker Between
+          update_interval: 0.2s
+          lambda: |-
+            static int state = 0;
+            auto call = id(hb_light).turn_on();
+            call.set_transition_length(0);
+            //id(hb_light).set_gamma_correct(1.0);
+            if (state == 0) {
+              call.set_warm_white(1.0);
+              call.set_cold_white(0.0);
+            } else if (state == 1) {
+              call.set_warm_white(0.0);
+              call.set_cold_white(1.0);
+            }
+            call.set_publish(false);
+            call.perform();
+            state += 1;
+            if (state >= 2)
+              state = 0;
+      
