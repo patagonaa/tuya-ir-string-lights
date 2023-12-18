@@ -5,7 +5,7 @@ Some information about cheap Tuya-based Wifi fairy lights with IR remote
 
 - Branding: `Dekor Smarte LED-Lichterkette`
 - EAN: `4311536003073`
-- Imported by: `Light Trade GmbH ` for `KOFUR Handelsgesellschaft mbH`
+- Imported by: `Light Trade GmbH` for `KOFUR Handelsgesellschaft mbH`
 - Product video: http://lighttrade.net/kofur/smarte_lichterkette/
 - Article number: `41958`
 - Tuya Firmware version: `1.0.4`

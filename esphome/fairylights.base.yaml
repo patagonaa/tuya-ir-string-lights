@@ -12,58 +12,13 @@ binary_sensor:
       mode:
         input: true
         pullup: true
-  - platform: remote_receiver
-    name: "Remote On"
-    pioneer:
-      rc_code_1: 0x0045
-  - platform: remote_receiver
-    name: "Remote Timer"
-    pioneer:
-      rc_code_1: 0x0046
-  - platform: remote_receiver
-    name: "Remote Off"
-    pioneer:
-      rc_code_1: 0x0047
-  - platform: remote_receiver
-    name: "Remote Mode 1"
-    pioneer:
-      rc_code_1: 0x0044
-  - platform: remote_receiver
-    name: "Remote Mode 2"
-    pioneer:
-      rc_code_1: 0x0043
-  - platform: remote_receiver
-    name: "Remote Mode 3"
-    pioneer:
-      rc_code_1: 0x0007
-  - platform: remote_receiver
-    name: "Remote Mode 4"
-    pioneer:
-      rc_code_1: 0x0009
-  - platform: remote_receiver
-    name: "Remote Mode 5"
-    pioneer:
-      rc_code_1: 0x0016
-  - platform: remote_receiver
-    name: "Remote Mode 6"
-    pioneer:
-      rc_code_1: 0x000D
-  - platform: remote_receiver
-    name: "Remote Mode 7"
-    pioneer:
-      rc_code_1: 0x000C
-  - platform: remote_receiver
-    name: "Remote Mode 8"
-    pioneer:
-      rc_code_1: 0x005E
-  - platform: remote_receiver
-    name: "Remote Dim Down"
-    pioneer:
-      rc_code_1: 0x0008
-  - platform: remote_receiver
-    name: "Remote Dim Up"
-    pioneer:
-      rc_code_1: 0x005A
+
+text_sensor:
+  - platform: template
+    name: "IR Receiver"
+    id: ir_receiver_sensor
+    lambda: 'return {""};'
+    update_interval: 60s
 
 remote_receiver:
   id: ir_receiver
@@ -74,6 +29,46 @@ remote_receiver:
       input: true
       pulldown: true
   dump: pioneer
+  on_pioneer: 
+    then:
+      - text_sensor.template.publish:
+          id: ir_receiver_sensor
+          state: !lambda '
+            switch(x.rc_code_1){
+              case 0x0045:
+                return "On";
+              case 0x0046:
+                return "Timer";
+              case 0x0047:
+                return "Off";
+              case 0x0044:
+                return "Mode 1";
+              case 0x0043:
+                return "Mode 2";
+              case 0x0007:
+                return "Mode 3";
+              case 0x0009:
+                return "Mode 4";
+              case 0x0016:
+                return "Mode 5";
+              case 0x000D:
+                return "Mode 6";
+              case 0x000C:
+                return "Mode 7";
+              case 0x005E:
+                return "Mode 8";
+              case 0x0008:
+                return "Dim Down";
+              case 0x005A:
+                return "Dim Up";
+              default:
+                return "";
+            }
+            '
+      - delay: 100ms
+      - text_sensor.template.publish:
+          id: ir_receiver_sensor
+          state: !lambda 'return "";'
 
 output:
   - platform: libretiny_pwm
