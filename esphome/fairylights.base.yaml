@@ -1,6 +1,17 @@
 
 bk72xx:
   board: generic-bk7231n-qfn32-tuya
+  framework:
+    options:
+      LT_UART_DEFAULT_PORT: 1 # output ESPHome log messages on UART1 (upload UART)
+
+external_components:
+  # - source: 
+  #     type: local
+  #     path: components
+  #   components: [lt_hbridge]
+  - source: github://LeoDJ/tuya-ir-string-lights
+    components: [lt_hbridge]
 
 binary_sensor:
   - platform: gpio
@@ -70,17 +81,11 @@ remote_receiver:
           id: ir_receiver_sensor
           state: !lambda 'return "";'
 
-output:
-  - platform: libretiny_pwm
-    id: output_1
-    pin: P7
-  - platform: libretiny_pwm
-    id: output_2
-    pin: P8
-
 light:
-  - platform: hbridge
-    id: fairy_light
-    name: Light
-    pin_a: output_1
-    pin_b: output_2
+  - platform: lt_hbridge
+    name: "Light"
+    pin_a: P7     # outputs need to be on different PWM groups (P6/7: G0, P8/9: G1, P24/29: G2)
+    pin_b: P8
+    # default_transition_length: 0.5s
+    # gamma_correct: 1.0
+    # constant_brightness: true
