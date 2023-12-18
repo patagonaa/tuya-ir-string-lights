@@ -10,7 +10,7 @@ external_components:
   #     type: local
   #     path: components
   #   components: [lt_hbridge]
-  - source: github://LeoDJ/tuya-ir-string-lights
+  - source: github://patagonaa/tuya-ir-string-lights
     components: [lt_hbridge]
 
 binary_sensor:
