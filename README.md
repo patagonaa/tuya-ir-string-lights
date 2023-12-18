@@ -1,6 +1,8 @@
 # tuya-ir-string-lights
 Some information about cheap Tuya-based Wifi fairy lights with IR remote
 
+![Fairy light box pyramid](images/pyramid.jpg)
+
 - Branding: `Dekor Smarte LED-Lichterkette`
 - EAN: `4311536003073`
 - Imported by: `Light Trade GmbH ` for `KOFUR Handelsgesellschaft mbH`
