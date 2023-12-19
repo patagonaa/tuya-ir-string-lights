@@ -30,7 +30,7 @@ To get into Wifi pairing/AP mode:
 
 An ESPHome `fairylights.base.yaml` and example `fairylights-1.yaml` are provided in `/esphome/`. Currently, the lights themselves, the button and the IR receiver are implemented.
 
-Due to the janky [`hbridge` light component](https://esphome.io/components/light/hbridge) the lights are very flickery (likely WiFI activity causing delays in the main loop). Ideally, instead of switching between the colors in software, the PWM outputs would just generate the asynchronous output themselves (though that is currently not easily possible with ESPHome/LibreTiny).
+[@LeoDJ](https://github.com/LeoDJ) implemented a BK7231N-specific (a)synchronous PWM H-bridge component which is used here instead of the janky ESPHome [`hbridge` light component](https://esphome.io/components/light/hbridge) which is flickery and glitchy as it switches polarity in the ~60Hz ESPHome main loop.
 
 ## Hardware
 
