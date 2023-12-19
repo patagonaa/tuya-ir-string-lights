@@ -93,7 +93,7 @@ light:
     # constant_brightness: true
     id: hb_light
     effects:
-      - random:
+      #- random: # https://github.com/esphome/issues/issues/5241
       - pulse:
           update_interval: 4s
           transition_length: 4s
